@@ -6,6 +6,9 @@
 #include <M5StickC.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
+#include "pb.h"
+
+#include "../gk_pbrpc/nanopb_cpp/protos/simple.pb.h"
 
 
 #define GKOS_Version 0.1
@@ -18,17 +21,51 @@ std::shared_ptr<FPBluetooth> ble;
 void startBLE(){
 		Serial.println("Setting Up BLE\n");
 		ble = std::make_shared<FPBluetooth>();
-
-		Serial.println("protocol buffer");
-	    uint8_t buffer[128];
-        pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(4));
+//todo: a better way to bootstrap debugging
 
 }
 
+
+void pbTest(){
+	Serial.println("PB Stuffs");
+	uint8_t buffer[128];
+	SimpleMessage message = SimpleMessage_init_zero;
+	/* Create a stream that will write to our buffer. */
+	pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
+
+	/* Fill in the lucky number */
+	message.lucky_number = 13;
+
+	/* Now we are ready to encode the message! */
+	bool status = pb_encode(&stream, SimpleMessage_fields, &message);
+	auto message_length = stream.bytes_written;
+
+	if (!status) {
+		Serial.println('/nEncoding PB failed :(');
+	} else {
+		//Decode Message
+		SimpleMessage dMsg = SimpleMessage_init_zero;
+		pb_istream_t dStream = pb_istream_from_buffer(buffer, message_length);
+
+		auto dStatus = pb_decode(&dStream, SimpleMessage_fields, &dMsg);
+
+		if (!dStatus) {
+			Serial.printf("Decoding PB failed ;( %s\n", PB_GET_ERROR(&dStream));
+		} else {
+			//decode worked
+			Serial.printf("your lucky number is: \n %d",
+					(int) dMsg.lucky_number);
+		}
+
+	}
+
+
+}
 void setup(){
 	Serial.begin(115200);
 
 //	M5.begin();
+	pbTest();
 	startBLE();
 	vTaskDelay(1000/portTICK_RATE_MS);
 
