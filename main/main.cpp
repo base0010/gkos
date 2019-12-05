@@ -4,6 +4,9 @@
 
 #include "FP.h"
 #include <M5StickC.h>
+#include <pb_decode.h>
+#include <pb_encode.h>
+
 
 #define GKOS_Version 0.1
 
@@ -14,8 +17,11 @@ std::shared_ptr<FPBluetooth> ble;
 
 void startBLE(){
 		Serial.println("Setting Up BLE\n");
-
 		ble = std::make_shared<FPBluetooth>();
+
+		Serial.println("protocol buffer");
+	    uint8_t buffer[128];
+        pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(4));
 
 }
 
