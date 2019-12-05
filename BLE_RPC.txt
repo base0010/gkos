@@ -1,0 +1,26 @@
+Bluetooth/Command RPC Specification & Pusedo Code
+
+
+enum rpc_command_t {
+	mintNFT=0, 
+	doSomethingElse=1,
+}
+
+
+struct rpc_call {
+	rpc_command_t command; 
+	int status; 
+	
+}
+
+function executeNextStep(rpc_call command){
+
+}
+
+
+(+) MintNFT 
+
+requires: that client RSSI as measured by server (GK Device) is close. 
+
+
+

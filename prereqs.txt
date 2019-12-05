@@ -1,0 +1,29 @@
+uuidgen via uuid-runtime (ubuntu) 
+
+//web3e
+
+git clone https://github.com/AlphaWallet/Web3E
+
+//ArduinoJson
+git clone https://github.com/bblanchon/ArduinoJson.git
+
+//QRcode
+
+git clone https://github.com/ricmoo/qrcode
+
+git clone u8g2lib
+
+&& mv dependencies /components/arduino/libraries
+
+
+esp-idf 
+ git checkout 286202c
+
+eps-idf arduino
+7b5cd47d07353747aa4b92bb9ac212d18371da20
+
+
+NOTES ON BLE:
+
+They pointers to pServer & pCharacteristic in example defualt to NULL; **
+
