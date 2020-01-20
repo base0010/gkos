@@ -1,4 +1,5 @@
 syntax = "proto3"; 
+//RPC COMMAND PAIRS
 //client side command request
 message rpc_command_request {
 	
@@ -14,14 +15,13 @@ message rpc_command_request {
 //device side rpc command response (sent to client after rpc_command_request)
 //Some logic to send to give commandUUID and add to command queue
 message rpc_command_response{
+	//if request dosen't work uuid will be 0; 
 	string uuid; 
-	enum Result {
-	//Client successfully submitted the request to queue 
-		SUCCESS = 0; 
-		ERROR = 1; 
-	}
+	optional string time; 
 }
 
+
+//RPC QUERY PAIRS
 //client sends to device to query by uuid
 message rpc_query_uuid {
 	string uuid; 
@@ -34,9 +34,9 @@ message procedural_data{
 }
 //Ex GET_NFT(0) @ Step 1 (0) => executeStep1Logic(ex send Signed Msg); 
 message rpc_query_response {
-	bool exists; 
+	bool exists;  
 	message commandStatus {
-		int procedureStep;
+		int procedural_step;
 		//step 0 may have no data to negotiate the socket or sth 
 		optional procedural_data;  
 	}

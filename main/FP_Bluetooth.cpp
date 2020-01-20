@@ -7,13 +7,16 @@
 #define BLE_SERVICE_NAME "FP"
 #define SERVICE_UUID "5b75b75e-5add-11e9-8647-d663bd873d93"
 
-
 #define CHARACTERISTIC_UUID_FP "613a4f5b-0023-4099-9abe-2161382025ed"
 
 
-#define RPC_COMMAND_UUID "dff94330-ad82-48f3-aeac-87052723576a"
+//this will be for protobuf impl.
+//#define RPC_COMMAND_UUID "dff94330-ad82-48f3-aeac-87052723576a"
+
 //has writable attribute for issuing new RPC Commands
 //has readable attribute for showing RPC Command status
+
+std::string RPC_COMMAND_PREAMBLE = "GK_RPC";
 
 
 class ServerCallbacks : public BLEServerCallbacks
@@ -45,37 +48,47 @@ private:
 
 };
 
-class ClientCallbacks : public BLECharacteristicCallbacks
-{
-private:
-	std::string rxValue;
-
-public:
-    void onWrite(BLECharacteristic *pCharacteristic)
-    {
-        rxValue = pCharacteristic->getValue();
-
-        if (sizeof(rxValue) > 0)
-        {
-            Serial.println("*********");
-            Serial.print("Received Value: ");
-
-            for (int i = 0; i < rxValue.length(); i++)
-            {
-                Serial.println(rxValue[i]);
-            }
-
-        }
-    }
-};
+//class ClientCallbacks : public BLECharacteristicCallbacks
+//{
+//private:
+//	std::string rxValue;
+//
+//public:
+//    void onWrite(BLECharacteristic *pCharacteristic)
+//    {
+//        rxValue = pCharacteristic->getValue();
+//
+//        if (sizeof(rxValue) > 0)
+//        {
+//            Serial.println("*********");
+//            Serial.print("Received Value: ");
+//
+//            for (int i = 0; i < rxValue.length(); i++)
+//            {
+//                Serial.println(rxValue[i]);
+//            }
+//
+//        }
+//    }
+//};
 
 
 //callbacks for incoming RPC_Commands via RPC_COMMAND Characteristic
 
-class CommandCallbacks : public BLECharacteristicCallbacks {
+class ClientCallbacks : public BLECharacteristicCallbacks {
 private:
 	std::string rxValue;
+	BLE_RPC *blerpc = new BLE_RPC();
 public:
+	  bool isValidRPCPreamble(){
+		  if (rxValue.find(RPC_COMMAND_PREAMBLE) != std::string::npos){
+		  	  Serial.println("We Recieved An RPC Command");
+		  	  return true;
+            } else{
+  	          return false;
+            }
+
+	  }
 	  void onWrite(BLECharacteristic *pCharacteristic)
 	    {
 	        rxValue = pCharacteristic->getValue();
@@ -90,6 +103,11 @@ public:
 	                Serial.println(rxValue[i]);
 	            }
 
+	            if(this->isValidRPCPreamble()){
+	            	blerpc->setRX(rxValue);
+	            	Serial.println("Woot420");
+//	            	Serial.println(blerpc->rxData.c_str());
+	        }
 	        }
 	    }
 };
@@ -122,7 +140,7 @@ FPBluetooth::FPBluetooth()
 
     Serial.println("BLE Initalized");
     Serial.println("Service UUID:\n");
-    Serial.println("atttmpt power set\n\n\n");
+    Serial.println("attempt power set\n\n\n");
     BLEDevice::setPower(ESP_PWR_LVL_P9);
     Serial.println(SERVICE_UUID);
 
