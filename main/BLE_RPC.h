@@ -4,6 +4,12 @@
 
 #include <unordered_map>
 #include <string>
+#include <functional>
+#include <Arduino.h>
+
+
+
+
 enum rpc_command {
 	mintNFT=0,
 	doSomethingElse=1,
@@ -29,12 +35,20 @@ class BLE_RPC{
 
 
 protected:
-	std::unordered_map <std::string,rpc_command>commandMap;
+	//std::any in C++17 would let us store functions with arbitrary signatures.
+	std::unordered_map <std::string,std::function<void()>>commandMap;
+	std::string command;
+	std::string isValidRPCPreamble(std::string fullRx);
+	std::string RPC_COMMAND_PREAMBLE = "GK_RPC:";
+
+	void execCommand(std::string command);
+
 private:
 	std::string txData;
 	std::string rxData;
 	void sendNFTMetaTx(std::string address);
-	void getCommand(std::string command);
+	void e(std::string command);
+
 
 public:
 	BLE_RPC();

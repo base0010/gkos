@@ -80,15 +80,7 @@ private:
 	std::string rxValue;
 	BLE_RPC *blerpc = new BLE_RPC();
 public:
-	  bool isValidRPCPreamble(){
-		  if (rxValue.find(RPC_COMMAND_PREAMBLE) != std::string::npos){
-		  	  Serial.println("We Recieved An RPC Command");
-		  	  return true;
-            } else{
-  	          return false;
-            }
 
-	  }
 	  void onWrite(BLECharacteristic *pCharacteristic)
 	    {
 	        rxValue = pCharacteristic->getValue();
@@ -96,20 +88,10 @@ public:
 	        if (sizeof(rxValue) > 0)
 	        {
 	            Serial.println("\n*********");
-	            Serial.print("Received Value: ");
-
-	            for (int i = 0; i < rxValue.length(); i++)
-	            {
-	                Serial.println(rxValue[i]);
+	            Serial.print("Received Value On RPC UUID: ");
+	            blerpc->setRX(rxValue);
 	            }
-
-	            if(this->isValidRPCPreamble()){
-	            	blerpc->setRX(rxValue);
-	            	Serial.println("Woot420");
-//	            	Serial.println(blerpc->rxData.c_str());
 	        }
-	        }
-	    }
 };
 
 
